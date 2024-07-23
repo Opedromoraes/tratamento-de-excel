@@ -1,6 +1,6 @@
 spring:
   application:
-    name: gestaodevendas
+    name: excel
   datasource:
     url: jdbc:postgresql://localhost:5432/excel
     username: ADMIN

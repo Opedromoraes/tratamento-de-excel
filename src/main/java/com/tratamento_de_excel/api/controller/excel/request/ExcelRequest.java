@@ -11,11 +11,8 @@ import java.util.List;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 public class ExcelRequest {
 
-    @Schema(description = "Nomes no excel", example = "Pedro, Guilherme, Romulo")
+    @Schema(description = "Nomes no excel", example = "['Pedro', 'Guilherme', 'Romulo'] <- aspas duplas")
     private List<String> nomes;
-
-    @Schema(description = "Nome do arquivo", example = "Nomes")
-    private String nome;
 
 //    private MultipartFile file;
 //    private String filtro;

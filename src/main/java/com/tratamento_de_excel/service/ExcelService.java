@@ -5,11 +5,10 @@ import com.tratamento_de_excel.domain.entity.Cliente;
 import com.tratamento_de_excel.repository.ClienteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -20,8 +19,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ExcelService {
 
-    private static final String fileName = "C:/testePlanilha/novoExcel.xls";
-    private ClienteRepository repository;
+    private static final String fileName = "C:/testePlanilha/novoExcel.xlsx";
+    private final ClienteRepository repository;
+
 //    private MockMvc mockMvc;
 
     public String gerarExcel(ExcelRequest request) {
@@ -47,7 +47,7 @@ public class ExcelService {
             log.error("Erro na edição do arquivo!" + ex.getMessage());
         }
 
-        return "Planilha criada: " + fileName;
+        return "Planilha criada com sucesso: " + fileName;
     }
 
     public List<String> lerExcel(String file) {
@@ -76,14 +76,12 @@ public class ExcelService {
         return list;
     }
 
-    public List<Cliente> carregarExcel(String file) {
+    public void salvarClientesDoExcel(MultipartFile file) throws IOException {
         List<Cliente> clientes = new ArrayList<>();
-        try {
-            Workbook workbook = getWorkbookFromFile(file);
+        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
-
             for (Row row : sheet) {
-                if (row.getRowNum() == 0){
+                if (row.getRowNum() == 0) {
                     continue;
                 }
                 Cliente cliente = new Cliente();
@@ -91,18 +89,12 @@ public class ExcelService {
                 cliente.setEmail(row.getCell(1).getStringCellValue());
                 cliente.setNome(row.getCell(2).getStringCellValue());
 
+                if (cliente.getCpf().isEmpty()) break;
+
                 clientes.add(cliente);
             }
-
-            workbook.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            repository.saveAll(clientes);
         }
-
-        salvarEntidades(clientes);
-
-        return clientes;
     }
 
     public Workbook getWorkbookFromFile(String filePath) throws IOException {
@@ -114,10 +106,6 @@ public class ExcelService {
             // FileInputStream vai ler o arquivo de acordo com o caminho que passei
             // Cria um objeto Woorkbook(um arquivo) através do FileInputStream para retornar ele no método "lerExcel"
         }
-    }
-
-    public void salvarEntidades(List<Cliente> clientes) {
-        repository.saveAll(clientes);
     }
 
 }

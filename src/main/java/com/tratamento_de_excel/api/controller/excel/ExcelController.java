@@ -32,27 +32,12 @@ public class ExcelController implements IExcelController {
 
     @Override
     public ResponseEntity<String> carregarExcel(MultipartFile file) {
-        service.carregarExcel(String.valueOf(file));
-        return new ResponseEntity<>("Arquivo carregado e salvo com sucesso", HttpStatus.OK);
+        try {
+            service.salvarClientesDoExcel(file);
+            return ResponseEntity.ok("Planilha carregada com sucesso!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao carregar a planilha: " + e.getMessage());
+        }
     }
-
-//    @Override
-//    public ResponseEntity<List<String>> lerExcel(MultipartFile file) throws IOException {
-//        service.lerExcel(file);
-//    }
-
-
-    //1:
-    // criar endpoint para ler uma planilha utilizando header
-    // receber um arquivo excel (multpartfiledata), em que o cabeçalho vai ser todos os campos do objeto cliente
-    // no service ler o arquivo excel, validar e salvar o cliente no banco
-    // 2:
-    // planilha de notas de alunos (Coluna A = nomes; Coluna B = notas)
-    // acrescentar uma coluna com a média
-    // Focar em olhar documentação
-    // https://www.devmedia.com.br/apache-poi-manipulando-documentos-em-java/31778
-    // https://www.baeldung.com/spring-multipartfile-to-file
-    // https://naveenrk22.medium.com/import-wizard-reading-csvs-and-excel-sheets-in-spring-boot-d509b3d5cc1e
-    // https://github.com/bezkoder/spring-boot-upload-excel-files/tree/master/src/main
 
 }

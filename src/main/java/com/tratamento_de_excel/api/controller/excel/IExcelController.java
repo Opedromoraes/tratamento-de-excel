@@ -2,12 +2,12 @@ package com.tratamento_de_excel.api.controller.excel;
 
 import com.tratamento_de_excel.api.controller.excel.request.ExcelRequest;
 import com.tratamento_de_excel.api.controller.excel.response.ExcelResponse;
-import com.tratamento_de_excel.domain.exceptions.dto.ErroDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -36,11 +36,11 @@ public interface IExcelController {
                     @ApiResponse(
                             responseCode = "422",
                             description = "Requisição possui pelo menos um valor faltante ou inválido.",
-                            content = @Content(schema = @Schema(implementation = ErroDTO.class))),
+                            content = @Content(schema = @Schema(implementation = Exception.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Ocorreu um erro inesperado.",
-                            content = @Content(schema = @Schema(implementation = ErroDTO.class)))
+                            content = @Content(schema = @Schema(implementation = Exception.class)))
             })
     @PostMapping
     @ResponseStatus(CREATED)
@@ -57,11 +57,11 @@ public interface IExcelController {
                     @ApiResponse(
                             responseCode = "422",
                             description = "Requisição possui pelo menos um valor faltante ou inválido.",
-                            content = @Content(schema = @Schema(implementation = ErroDTO.class))),
+                            content = @Content(schema = @Schema(implementation = Exception.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Ocorreu um erro inesperado.",
-                            content = @Content(schema = @Schema(implementation = ErroDTO.class)))
+                            content = @Content(schema = @Schema(implementation = Exception.class)))
             })
     @GetMapping("/upload/ler-excel")
     @ResponseStatus(OK)
@@ -78,13 +78,13 @@ public interface IExcelController {
                     @ApiResponse(
                             responseCode = "422",
                             description = "Requisição possui pelo menos um valor faltante ou inválido.",
-                            content = @Content(schema = @Schema(implementation = ErroDTO.class))),
+                            content = @Content(schema = @Schema(implementation = Exception.class))),
                     @ApiResponse(
                             responseCode = "500",
                             description = "Ocorreu um erro inesperado.",
-                            content = @Content(schema = @Schema(implementation = ErroDTO.class)))
+                            content = @Content(schema = @Schema(implementation = Exception.class)))
             })
-    @GetMapping("/upload")
+    @PostMapping(value = "/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(OK)
     ResponseEntity<String> carregarExcel(@RequestParam("file") MultipartFile file);
     }
