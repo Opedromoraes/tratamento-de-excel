@@ -21,12 +21,12 @@ public class ExcelService {
 
     private static final String fileName = "C:/testePlanilha/novoExcel.xlsx";
     private final ClienteRepository repository;
+    private static final String editarExcel = "C:/testePlanilha/editarExcel";
 
 //    private MockMvc mockMvc;
 
     public String gerarExcel(ExcelRequest request) {
 
-        log.info("Criando planilha");
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Nomes");
 
@@ -37,7 +37,6 @@ public class ExcelService {
         }
 
         try {
-            log.info("Acessando diretório");
             FileOutputStream out = new FileOutputStream(fileName);
             workbook.write(out);
             out.close();
@@ -92,9 +91,54 @@ public class ExcelService {
                 if (cliente.getCpf().isEmpty()) break;
 
                 clientes.add(cliente);
+
             }
             repository.saveAll(clientes);
         }
+    }
+
+    public String carregarExcel(MultipartFile file) throws IOException {
+        List<Cliente> clientes = new ArrayList<>();
+        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+            for (Row row : sheet) {
+                if (row.getRowNum() == 0) {
+                    row.createCell(5).setCellValue("media");
+                    continue;
+                }
+                Cliente cliente = new Cliente();
+                cliente.setNome(row.getCell(0).getStringCellValue());
+                cliente.setCpf(row.getCell(1).getStringCellValue());
+                cliente.setEmail(row.getCell(2).getStringCellValue());
+                cliente.setNota1(row.getCell(3).getStringCellValue());
+                cliente.setNota2(row.getCell(4).getStringCellValue());
+
+                if (cliente.getNome().isEmpty()) break;
+
+                String media = calcularMedia(cliente.getNota1(), cliente.getNota2());
+                cliente.setMedia(media);
+
+                row.createCell(5).setCellValue(media);
+
+                clientes.add(cliente);
+
+            }
+            repository.saveAll(clientes);
+
+            FileOutputStream out = new FileOutputStream(editarExcel.concat(".xlsx"));
+            workbook.write(out);
+            out.close();
+
+            return "Planilha carregada com sucesso";
+        }
+
+    }
+
+    public String calcularMedia(String nota1, String nota2) {
+        double notaDouble1 = Double.parseDouble(nota1);
+        double notaDouble2 = Double.parseDouble(nota2);
+        Double mediaDouble = (notaDouble1 + notaDouble2) / 2;
+        return mediaDouble.toString();
     }
 
     public Workbook getWorkbookFromFile(String filePath) throws IOException {
@@ -107,5 +151,4 @@ public class ExcelService {
             // Cria um objeto Woorkbook(um arquivo) através do FileInputStream para retornar ele no método "lerExcel"
         }
     }
-
 }

@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -40,4 +42,15 @@ public class ExcelController implements IExcelController {
         }
     }
 
+    @Override
+    public ResponseEntity<String> editarExcel(MultipartFile file) {
+        try {
+            service.carregarExcel(file);
+            return ResponseEntity.ok("Planilha editada com sucesso!");
+        } catch (FileNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Arquivo não encontrado" + e.getMessage());
+        } catch (IOException e){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro na edição do arquivo" + e.getMessage());
+        }
+    }
 }

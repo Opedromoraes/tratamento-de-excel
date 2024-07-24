@@ -84,9 +84,35 @@ public interface IExcelController {
                             description = "Ocorreu um erro inesperado.",
                             content = @Content(schema = @Schema(implementation = Exception.class)))
             })
-    @PostMapping(value = "/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(OK)
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(CREATED)
     ResponseEntity<String> carregarExcel(@RequestParam("file") MultipartFile file);
-    }
+
+    @Operation(summary = "Editar Excel",
+            description = "Endpoint responsável por editar um excel já existente",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Excel editado com sucesso.",
+                            content = @Content(schema = @Schema(implementation = ExcelResponse.class))),
+                    @ApiResponse(
+                            responseCode = "422",
+                            description = "Requisição possui pelo menos um valor faltante ou inválido.",
+                            content = @Content(schema = @Schema(implementation = Exception.class))),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Ocorreu um erro inesperado.",
+                            content = @Content(schema = @Schema(implementation = Exception.class)))
+            })
+    @PostMapping(value = "/carregar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(CREATED)
+    ResponseEntity<String> editarExcel(@RequestParam("file") MultipartFile file);
+}
+
+
+
+
+
+
 
 

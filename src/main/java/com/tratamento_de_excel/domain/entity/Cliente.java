@@ -23,4 +23,10 @@ public class Cliente {
     private String cpf;
 
     private String email;
+
+    private String nota1;
+
+    private String nota2;
+
+    private String media;
 }
